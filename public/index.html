@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+	<head>
+		<title>YSA Ward Directory</title>
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+		<!-- AngularJS -->
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js'></script>
+		<!-- Our styles and code -->
+		<link rel="stylesheet" href="styles.css">
+		<script src='app.js'></script>
+	</head>
+	<body>
+		<div class="main-page">
+
+			<!-- header -->
+			<nav ng-app='loginApp' ng-controller='loginController as loginCtrl' class='navbar navbar-inverse navbar-fixed-top'>
+				<div ng-if='!state.authenticated' class='navbar-cotainer-login right'>
+					<!--<a class='navbar-brand'>CS 360 Magical Blog of Wonder and Joy</a> -->
+
+					<div class='left'>
+						<!--<span class='navbar-text'>Username:</span>-->
+						<span class='navbar-text'>Administrator Login:</span>
+						<input ng-enter='login()' ng-model='username' class='navbar-login' type="text" id="username" name="username" placeholder="Username">
+					</div>
+					<div class='right'>
+						<!--<span class='navbar-text'>Password:</span>-->
+						<input ng-enter='login()' ng-model='password' class='navbar-login' type="password" id="password" name="password" placeholder="Password">
+					</div>
+				</div>
+			</nav>
+			<div class='container'>
+				<h1 class='text-center'><b>
+					Welcome to the YSA Ward Directory!
+				</b></h1>
+			</div>
+			<div class='container'>
+				<img src='/static/images/front-page-temple.jpg' class='img-left'>
+				<button type='button' class='button-add right'>Add Yourself Now!</button>
+			</div>
+
+				<!-- blog post list -->
+				<!-- <div>
+					<ul>
+						<li>
+							<h3><a>A very long day</a></h3>
+							<div>0 views</div>
+							<em>Posted Nov 21, 2014 11:26:01 AM</em>
+						</li>
+					</ul>
+					<a class='btn btn-success'>Add Blog Post</a>
+				</div>
+			</div> -->
+		</div>
+		<footer>
+			<span>(C) Built by Matthew Cannon 2014</span>
+		</footer>
+	</body>
+</html>
