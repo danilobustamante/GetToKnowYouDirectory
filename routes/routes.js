@@ -1,14 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-	
-});
 
-console.log('Connecting to Database');
-connection.connect();
-console.log('Connected to Database');
+
 
 router.get('/', function(req, res){
 	//res.send('Hello from the Router');
@@ -22,7 +16,7 @@ router.get('/login', function(req, res){
 	var data = {username:req.headers.username, password:req.headers.password};
 	var queryString = 'SELECT accessLevel FROM users WHERE username=? AND password=?';
 	var prefix = ")]}',\n";
-	connection.query(queryString, [req.headers.username, req.headers.password], function(err, rows, fields){
+	global.connection.query(queryString, [req.headers.username, req.headers.password], function(err, rows, fields){
 		//TODO return unique identifier for login session
 		if (err || rows[0]==undefined){
 			res.redirect('/loginFailure');

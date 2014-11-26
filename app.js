@@ -2,14 +2,47 @@ var express = require('express');
 var app = express();
 var router = require('./routes/routes.js');
 var path = require('path');
+var prompt = require('prompt');
+var Database = require('./data/database.js')
+
+var db;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*app.get('/', function(req, res){
-	res.send("Welcome to express Server");
-});*/
+/*Create Database*/
+var schema = {
+    properties: {
+      host: {
+        required: true
+      },
+      user: {
+        required: true
+      },
+      password: {
+        hidden: true,
+        required: true
+      },
+      database: {
+        required: true
+      }
+    }
+  };
+
+prompt.start();
+
+
+//
+// Get property values from console
+//
+prompt.get(schema, function (err, result) {
+	//create database
+	db = new Database(result.host, result.user, result.password, result.database);
+	global.connection = db.start();
+});
+
+
 
 app.use('/', router);
 app.use('/login', router);
