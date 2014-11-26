@@ -35,34 +35,34 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+/*
+var mysql = require('mysql');
 
-/*var mysql = require('mysql');
-var connection = mysql.createConnection({
-	host : 'localhost',
-	user : 'root',
-	password : 'Uruguay2011!',
-	database : 'mydb'
-});
 
 console.log('Connecting');
 connection.connect();
 console.log('connected');
 
-var data = {username:'matthewjcannon',password:'matt',email:'tomballmjc@gmail.com'};
+var queryString = 'TRUNCATE TABLE users';
+connection.query(queryString, function(err){
+	if (err) console.log(err);
+});
+var data = {username:'admin',password:'admin',email:'tomballmjc@gmail.com','accessLevel':0};
 var queryString = 'INSERT INTO users SET ?'
 connection.query(queryString, data, function(err){
-	if (err) console.log('error');
+	if (err) console.log(err);
 });
 
 var queryString = 'SELECT * FROM users';
 connection.query(queryString, function(err, rows,fields){
-	if (err) console.log('error');
+	if (err) console.log('error reading data');
 
 	for(var i in rows){
 		console.log('id', rows[i].UserID);
 		console.log('users', rows[i].username);
 		console.log('password', rows[i].password);
 		console.log('email', rows[i].email);
+		console.log('accessLevel', rows[i].accessLevel);
 	}
 });
 connection.end();
