@@ -14,7 +14,7 @@
 		<div class="main-page">
 
 			<!-- header -->
-			<nav ng-app='loginApp' ng-controller='loginController as loginCtrl' class='navbar navbar-inverse navbar-fixed-top'>
+			<nav ng-app='loginApp' ng-controller='loginController as loginCtrl' class='navbar navbar-default navbar-inverse navbar-fixed-top'>
 				<div ng-if='!state.authenticated' class='navbar-cotainer-login right'>
 					<!--<a class='navbar-brand'>CS 360 Magical Blog of Wonder and Joy</a> -->
 
@@ -28,11 +28,35 @@
 						<input ng-enter='login()' ng-model='password' class='navbar-login' type="password" id="password" name="password" placeholder="Password">
 					</div>
 				</div>
+				<div ng-if='state.authenticated'>
+					<div class='right'>
+						<ul class ='nav navbar-nav'>
+							<li><a>Wards<span class='caret'></span></a>
+								<ul>
+									<!-- TODO - query database for this information and then display that information here -->
+									<li><a>YSA 48th Ward 6th Stake</a></li>
+									<li><a>Ward 2</a></li>
+									<li><a>Ward 3</a></li>
+								</ul>
+							</li>
+							<li ><a href="#">Account<span class='caret'></span></a>
+								<ul>
+									<li><a>Add Admin</a></li>
+									<li><a>My Information</a></li>
+									<li><a>Edit My Settings</a></li>
+									<li><a>Logout</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
 			</nav>
 			<div class='container'>
-				<h1 class='text-center'><b>
+				<h1 class='text-center'>
+					<b>
 					Welcome to the YSA Ward Directory!
-				</b></h1>
+					</b>
+				</h1>
 			</div>
 			<div class='container'>
 				<img src='/static/images/front-page-temple.jpg' class='img-left'>
