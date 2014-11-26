@@ -55,10 +55,11 @@
 				{
 					username = this.username;
 					password = this.password;
-					temp = loginService.login();
-					if(temp === 'true'){
-						$scope.state.authenticated =true;
-					}
+					loginService.login().then(function(data){
+						if(data.authenticated === 'true'){
+							$scope.state.authenticated = true;
+						}
+					});
 				}
 			});
 			/*
@@ -74,10 +75,10 @@
 		return {
 			login: function()
 			{
-				return $http.get('http://localhost:3000/login',{ headers: {'Username': username, 'Password':password}
-					}).success(function (data, status, headers, config) {
-						//return response.data;
-						return headers()['authentication'];
+				//TODO change to post
+				 return $http.get('http://localhost:3000/login',{ headers: {'Username': username, 'Password':password}
+					}).then(function (response) {
+						return response.data;
 					});
 			}/*,
 			savePost: function(post)
