@@ -2,19 +2,23 @@
 <html>
 	<head>
 		<title>YSA Ward Directory</title>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    	<script src='dependencies/jquery.min.js'></script>
 		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+		<link rel='stylesheet' href='dependencies/bootstrap-3.3.1-dist/dist/css/bootstrap.min.css'>
+		<script src='dependencies/bootstrap-3.3.1-dist/dist/js/bootstrap.min.js'></script>
 		<!-- AngularJS -->
-		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js'></script>
+		<script src='dependencies/angular.min.js'></script>
+		<script src='dependencies/ui-bootstrap-tpls-0.12.0.min.js'></script>
 		<!-- Our styles and code -->
 		<link rel="stylesheet" href="styles.css">
 		<script src='app.js'></script>
 	</head>
 	<body>
-		<div class="main-page">
+		<div class="main-page" ng-app='loginApp' ng-controller='loginController as loginCtrl'>
 
 			<!-- header -->
-			<nav ng-app='loginApp' ng-controller='loginController as loginCtrl' class='navbar navbar-default navbar-inverse navbar-fixed-top'>
+			<nav class='navbar navbar-default navbar-inverse navbar-fixed-top'>
 				<div ng-if='!state.authenticated' class='navbar-cotainer-login right'>
 					<!--<a class='navbar-brand'>CS 360 Magical Blog of Wonder and Joy</a> -->
 
@@ -22,59 +26,54 @@
 						<!--<span class='navbar-text'>Username:</span>-->
 						<span class='navbar-text'>Administrator Login:</span>
 						<input ng-enter='login()' ng-model='username' class='navbar-login' type="text" id="username" name="username" placeholder="Username">
-					</div>
-					<div class='right'>
 						<!--<span class='navbar-text'>Password:</span>-->
 						<input ng-enter='login()' ng-model='password' class='navbar-login' type="password" id="password" name="password" placeholder="Password">
 					</div>
+					<div class='right'>
+						<button class='navbar-button' ng-click='login()' id='loginButton'>Login</button>
+					</div>
 				</div>
 				<div ng-if='state.authenticated'>
+					<div class='left'>
+						<span class='navbar-text'>Logged In As: {{name}}</span>
+					</div>
 					<div class='right'>
 						<ul class ='nav navbar-nav'>
 							<li><a>Wards<span class='caret'></span></a>
 								<ul>
-									<!-- TODO - query database for this information and then display that information here -->
-									<li><a>YSA 48th Ward 6th Stake</a></li>
-									<li><a>Ward 2</a></li>
-									<li><a>Ward 3</a></li>
+									<li ng-repeat='ward in wards'>
+										<a ng-click='changeManagingWard($index)'>{{ward.ward}}</a>
+									</li>
 								</ul>
 							</li>
-							<li ><a href="#">Account<span class='caret'></span></a>
+							<li><a>Account<span class='caret'></span></a>
 								<ul>
-									<li><a>Add Admin</a></li>
+									<li><a ng-click='addAdmin()'>Add Admin</a></li>
 									<li><a>My Information</a></li>
 									<li><a>Edit My Settings</a></li>
-									<li><a>Logout</a></li>
+									<li><a ng-click='logout()'>Logout</a></li>
 								</ul>
 							</li>
 						</ul>
 					</div>
 				</div>
 			</nav>
-			<div class='container'>
-				<h1 class='text-center'>
-					<b>
-					Welcome to the YSA Ward Directory!
-					</b>
-				</h1>
-			</div>
-			<div class='container'>
-				<img src='/static/images/front-page-temple.jpg' class='img-left'>
-				<button type='button' class='button-add right'>Add Yourself Now!</button>
-			</div>
-
-				<!-- blog post list -->
-				<!-- <div>
-					<ul>
-						<li>
-							<h3><a>A very long day</a></h3>
-							<div>0 views</div>
-							<em>Posted Nov 21, 2014 11:26:01 AM</em>
-						</li>
-					</ul>
-					<a class='btn btn-success'>Add Blog Post</a>
+			<div ng-if='!state.authenticated'>
+				<div class='container'>
+					<h1 class='text-center'>
+						<b>
+						Welcome to the YSA Ward Directory!
+						</b>
+					</h1>
 				</div>
-			</div> -->
+				<div class='container'>
+					<img src='/static/images/front-page-temple.jpg' class='img-left'>
+					<button type='button' class='button-add right'>Add Yourself Now!</button>
+				</div>
+			</div>
+			<div ng-if='state.authenticated && state.managing' class='container' ng-manage-ward></div>
+			<div ng-if='state.authenticated && state.addAdmin' class='container' ng-add-admin></div>
+			<div ng-if='state.authenticated && state.viewDirectory' class='container' ng-view-directory></div>
 		</div>
 		<footer>
 			<span>(C) Built by Matthew Cannon 2014</span>

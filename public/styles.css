@@ -62,9 +62,35 @@ a {
 	background-color: green;
 }
 
+.navbar-button{
+	background-color: green;
+	font-size: 20px;
+	margin-top: 7px;
+	border: none;
+	margin-right: 15px;
+	color: white;
+	border-radius: 15px;
+	height: 35px;
+	width: 100px;
+}
+
 .img-left{
 	float:left;
 	margin-top: 10px;
+}
+
+.img-preview-directory{
+	padding-top: 10px;
+	width: 125px;
+	height: 160px;
+}
+
+.text-preview-directory{
+	width: 125px;
+	overflow: hidden;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 12px;
+	text-align: center;
 }
 
 .button-add {
@@ -78,6 +104,21 @@ a {
 	width: 400px;
 	font-size: 36px;
 	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.div-admin{
+	padding-top: 10px;
+}
+
+.list-admin-text{
+	float:left;
+	display:block;
+	width:150px;
+}
+
+.list-admin-input{
+	float:left;
+	display: block;
 }
 
 em {
@@ -116,6 +157,7 @@ nav ul li:hover > ul {
 }
 
 nav ul li {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	float: left;
 }
 nav ul li:hover {
@@ -172,6 +214,17 @@ nav ul ul ul {
 
 /***********************************************************/
 /*End Navigation Bar CSS settings*/
+.preview-ulist-directory{
+	padding-left: 0px;
+}
+.preview-list-directory{
+ 	float: left;
+ 	display: block;
+ 	padding-right: 15px;
+ 	padding-bottom: 15px;
+ 	padding-top: 15px;
+
+}
 /*
 ul {
 	list-style-type: none;

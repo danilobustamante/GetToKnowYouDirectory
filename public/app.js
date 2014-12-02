@@ -4,53 +4,23 @@
 	this.password = 'world';
 	app.controller('loginController', [
 		'$scope',
+		'$modal',
 		'loginService',
-		function($scope, loginService)
+		function($scope, $modal, loginService)
 		{
 			angular.extend($scope, {
 				state: {
-					authenticated: false
+					authenticated: false,
+					managing: false,
+					addAdmin: false,
+					viewDirectory: false
 				},
-				/*
-				addPost: function()
-				{
-					var post = {
-						id: Math.random(),
-						title: 'Untitled Post',
-						creationDate: new Date().getTime(),
-						content: '',
-						views: 0
-					};
-
-					$scope.posts[post.id] = post;
-					blogService.savePost(post);
-					$scope.editPost(post);
-				},
-				editPost: function(post)
-				{
-					$scope.state.activePost = post;
-					$scope.state.editing = true;
-				},
-				savePost: function(post)
-				{
-					post.creationDate = new Date().getTime();
-					blogService.savePost(post);
-					$scope.state.editing = false;
-				},
-				deletePost: function(post)
-				{
-					$scope.state.editing = false;
-					$scope.state.activePost = null;
-
-					delete $scope.posts[post.id];
-					blogService.deletePost(post);
-				},
-				viewPost: function(post)
-				{
-					post.views++;
-					blogService.savePost(post);
-					$scope.state.activePost = post;
-				}*/
+				accessLevel: 1000,
+				name: 'Hello World',
+				wards: [],
+				wardsManagingIndex: 0,
+				previewMembers: [],
+				members: [],
 				login: function()
 				{
 					username = this.username;
@@ -58,17 +28,112 @@
 					loginService.login().then(function(data){
 						if(data.authenticated === 'true'){
 							$scope.state.authenticated = true;
+							$scope.accessLevel = data.accessLevel;
+							$scope.name = data.name;
+							var modalInstance = $modal.open({
+							      templateUrl: 'loginModalSuccessContent.html',
+							      controller: 'ModalInstanceCtrl',
+							      resolve: {
+							        name: function () {
+							          return $scope.name;
+							        }
+							      }
+							   });
+							//get ward data
+							loginService.getWards().then(function(wards){
+								$scope.wards = wards;
+								$scope.state.managing = true;
+								$scope.wardsManagingIndex = 0;
+								//get preview member data
+								loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+									$scope.previewMembers = members;
+								});
+							});
 						}
+						else{
+								var modalInstance = $modal.open({
+							      templateUrl: 'loginModalFailureContent.html',
+							      controller: 'ModalInstanceCtrl',
+							      resolve: {
+							      	name: function (){
+							      		return $scope.name;
+							      	}
+							      }
+							    });
+						}
+						username = 'hello';
+						password = 'world';
+					});
+				},
+				logout: function()
+				{
+					loginService.logout().then(function(data){
+						//TODO notifty server of end of session
+						//$scope.state.authenticated = false;
+						var modalInstance = $modal.open({
+					      templateUrl: 'logoutModalSuccessContent.html',
+					      controller: 'ModalInstanceCtrl',
+					      resolve: {
+					      	name: function (){
+							      		return $scope.name;
+							      	}
+					      }
+					    });
+						username = 'hello';
+						password = 'world';
+						$scope.state.authenticated = true;
+						$scope.accessLevel = 1000;
+						$scope.name = 'Hello World';
+						$scope.wards = [];
+						$scope.state.authenticated = false;
+						$scope.previewMembers = [];
+					});
+				},
+				changeManagingWard: function(index)
+				{
+					$scope.wardsManagingIndex = index;
+					$scope.state.addAdmin = false;
+					$scope.state.managing = true;
+					$scope.state.viewDirectory = false;
+					//get preview member data
+					loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+						$scope.previewMembers = members;
+					});
+				},
+				addAdmin: function()
+				{
+					$scope.state.addAdmin = true;
+					$scope.state.managing = false;
+					$scope.state.viewDirectory = false;
+				},
+				getDirectory: function()
+				{
+					$scope.state.addAdmin = false;
+					$scope.state.managing = false;
+					$scope.state.viewDirectory = true;
+					loginService.getDirectory($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+						$scope.members = members;
 					});
 				}
 			});
-			/*
-			blogService.getPosts().then(function(posts) {
-				$scope.posts = posts;
-			});
-			*/
 		}
 	]);
+
+	// Please note that $modalInstance represents a modal window (instance) dependency.
+	// It is not the same as the $modal service used above.
+
+	app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, name) {
+
+	   $scope.name = name;
+
+	  $scope.ok = function () {
+	   $modalInstance.dismiss('ok');
+	  };
+
+	  $scope.cancel = function () {
+	    $modalInstance.dismiss('cancel');
+	  };
+	});
 
 	app.factory('loginService',['$http', function($http)
 	{
@@ -76,24 +141,43 @@
 			login: function()
 			{
 				//TODO change to post
-				 return $http.get('http://localhost:3000/login',{ headers: {'Username': username, 'Password':password}
+				 return $http.get('/login',{ headers: {'Username': username, 'Password':password}
 					}).then(function (response) {
 						return response.data;
 					});
-			}/*,
-			savePost: function(post)
-			{
-				return $http.put('http://localhost:3000/posts/' + post.id, post);
 			},
-			deletePost: function(post)
+			logout: function()
 			{
-				return $http.delete('http://localhost:3000/posts/' + post.id);
-			}*/
+				return $http.get('/logout').then(function (response) {
+					return response.data;
+				});
+			},
+			getWards: function()
+			{
+				return $http.get('/wards',{ headers: {'Username': username}
+					}).then(function(response) {
+						return response.data;
+					});
+			},
+			getDirectoryPreview: function(name)
+			{
+				return $http.get('/directoryPreview',{ headers: {'Ward': name}
+					}).then(function(response) {
+						return response.data;
+					});
+			},
+			getDirectory: function(name)
+			{
+				return $http.get('/directory',{ headers: {'Ward': name}
+					}).then(function(response) {
+						return response.data;
+					});
+			}
 		};
 	}]);
 	/*
-This directive allows us to pass a function in on an enter key to do what we want.
- */
+		This directive allows us to pass a function in on an enter key to do what we want.
+ 	*/
 	app.directive('ngEnter', function () {
 	    return function (scope, element, attrs) {
 	        element.bind("keydown keypress", function (event) {
@@ -107,60 +191,38 @@ This directive allows us to pass a function in on an enter key to do what we wan
 	        });
 	    };
 	});
-	/*
-	app.directive('blogPost', [function() {
-		return {
-			restrict: 'A',
-			scope: {
-				post: '=ngModel'
-			},
-			template: "" +
-				"<div>" +
-					"<h1>{{post.title}}</h1>" +
-					"<em>{{ post.creationDate | date:'medium' }}</em>" +
-					"<p>{{post.content}}</p>" +
-					"<button class='btn btn-success' ng-click='edit()'>Edit Blog Post</button>" +
-				"</div>",
-			link: function($scope)
-			{
-				$scope.edit = function()
-				{
-					$scope.$parent.editPost($scope.post);
-				};
-			}
-		};
-	}]);*/
-	/*
-	app.directive('blogPostEditor', [function() {
-		return {
-			restrict: 'A',
-			scope: {
-				post: '=ngModel'
-			},
-			template: "" +
-				"<div class='form-group'>" +
-					"<h1><input type='text' ng-model='post.title' /></h1>" +
-					"<em>{{ post.creationDate | date:'medium' }}</em>" +
-					"<textarea class='form-control' ng-model='post.content' rows='10'></textarea>" +
-				"</div>" +
-				"<div class='form-group pull-right'>" +
-					"<button class='btn btn-default' ng-click='delete()'>Delete</button>" +
-					"<button class='btn btn-success' ng-click='save()'>Publish</button>" +
-				"</div>",
-			link: function($scope)
-			{
-				angular.extend($scope, {
-					delete: function()
-					{
-						$scope.$parent.deletePost($scope.post);
-					},
-					save: function()
-					{
-						$scope.$parent.savePost($scope.post);
-					}
-				});
-			}
-		};
-	}]);*/
 
-})(angular.module('loginApp', []));
+	app.directive('ngManageWard', [function() {
+		return {
+			restrict: 'A',
+			scope: false,
+			templateUrl: 'templates/manageWard.html',
+			link: function($scope)
+			{
+
+			}
+		}
+	}]);
+	app.directive('ngAddAdmin', [function() {
+		return {
+			restrict: 'A',
+			scope: false,
+			templateUrl: 'templates/addAdmin.html',
+			link: function($scope)
+			{
+
+			}
+		}
+	}]);
+	app.directive('ngViewDirectory', [function() {
+		return {
+			restrict: 'A',
+			scope: false,
+			templateUrl: 'templates/viewDirectory.html',
+			link: function($scope)
+			{
+
+			}
+		}
+	}]);
+})(angular.module('loginApp', ['ui.bootstrap']));

@@ -1,0 +1,22 @@
+<div class="container">
+	<h1 class="left">
+		<b> Manage {{wards[wardsManagingIndex].ward}}!</b>
+	</h1>
+</div>
+<div class="container">
+	<button ng-click='getDirectory()'>View Directory</button>
+</div>
+<div class="container">
+	<ul class="preview-ulist-directory">
+		<li ng-repeat='member in previewMembers' class="preview-list-directory">
+			<img class="img-preview-directory" ng-src="{{member.img}}">
+				<br><div class="text-preview-directory">{{member.firstname}} {{member.lastname}}</div>
+		</li>
+	</ul>
+</div>
+<div class="container">
+	<button>Search</button>
+</div>
+<div class="container">
+	<button>Manage Survey</button>
+</div>

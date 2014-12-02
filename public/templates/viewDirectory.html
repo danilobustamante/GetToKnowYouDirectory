@@ -1,0 +1,13 @@
+<div class="container">
+	<h1 class="left">
+		<b>{{wards[wardsManagingIndex].ward}}</b>
+	</h1>
+</div>
+<div class="container">
+	<ul class="preview-ulist-directory">
+		<li ng-repeat='member in members' class="preview-list-directory">
+			<img class="img-preview-directory" ng-src="{{member.img}}">
+				<br><div class="text-preview-directory">{{member.firstname}} {{member.lastname}}</div>
+		</li>
+	</ul>
+</div>
