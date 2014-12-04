@@ -10,6 +10,7 @@
   "author": "Matthew Cannon",
   "license": "ISC",
   "dependencies": {
+    "crypto": "0.0.3",
     "ejs": "^1.0.0",
     "express": "^4.10.2",
     "mysql": "^2.5.3",

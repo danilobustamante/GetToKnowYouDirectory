@@ -1,4 +1,5 @@
 var express = require('express');
+var crypto = require('crypto');
 var router = express.Router();
 
 
@@ -18,6 +19,10 @@ router.get('/login', function(req, res){
 						'members_MemberID = MemberID';
 	var prefix = ")]}',\n";
 	var json = '';
+	crypto.randomBytes(256, function(ex, buf) {
+	  if (ex) throw ex;
+	  console.log('Have %d bytes of random data: %s', buf.length, buf);
+	});
 	global.connection.query(queryString, [req.headers.username, req.headers.password], function(err, rows, fields){
 		//TODO return unique identifier for login session
 		if (err || rows[0]==undefined){
