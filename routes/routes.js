@@ -1,5 +1,6 @@
 var express = require('express');
 var hat = require('hat');
+var crypto = require('crypto');
 var router = express.Router();
 var time_two_weeks = 60*60*24*14;
 
@@ -16,34 +17,52 @@ router.get('/', function(req, res){
 
 router.get('/login', function(req, res){
 	var data = {username:req.headers.username, password:req.headers.password};
-	var queryString = 'SELECT accessLevel, members_firstname, UserID FROM users, members WHERE username=? AND password=? AND '+
-						'members_MemberID = MemberID';
+	var queryString = 'SELECT password_salt FROM users WHERE username=?'
 	var prefix = ")]}',\n";
 	var json = '';
-	global.connection.query(queryString, [req.headers.username, req.headers.password], function(err, rows, fields){
-		if (err || rows[0]==undefined){
+	res.contentType('application/json');
+	global.connection.query(queryString, [req.headers.username], function(err, rows, fields){
+		if(err || !rows || !rows[0]){
+			console.log(err);
 			json = {authenticated:'false'};
+			res.send(prefix+JSON.stringify(json));
 		}
 		else{
-			if(rows[0].accessLevel!=undefined){
-			  var uuid = hat(bits=512);
-			  queryString = 'INSERT INTO authentication SET time_start=?, time_end=?, token=?, users_UserID=?';
-			  var date = new Date();
-			  var startTime = date.getTime();
-			  var endTime = date.getTime() + time_two_weeks;
-			  var access = rows[0].accessLevel;
-			  var firstname = rows[0].members_firstname;
-			  var userID = rows[0].UserID;
-			  var expires = endTime - startTime;
-			  global.connection.query(queryString, [startTime, endTime, uuid, userID], function(err, rows, fields){
-			  	if(err) console.log(err);
-			  	else{
-			  		json = {token:uuid, accessLevel:access, username:req.headers.username, name:firstname, userID:userID, expires:expires};
-			  		res.contentType('application/json');
-					res.send(prefix+JSON.stringify(json));
-			  	} 
-			  });
-			}
+			crypto.pbkdf2(req.headers.password, rows[0].password_salt, 10000, 512, function(err, derivedKey){
+				queryString = 'SELECT accessLevel, members_firstname, UserID FROM users, members WHERE username=? AND password=? AND '+
+									'members_MemberID = MemberID';
+				global.connection.query(queryString, [req.headers.username, derivedKey.toString('base64')], function(err, rows, fields){
+					if (err || rows[0]==undefined){
+						json = {authenticated:'false'};
+						res.send(prefix+JSON.stringify(json));
+					}
+					else{
+						if(rows[0].accessLevel!=undefined){
+						  var uuid = hat(bits=512);
+						  queryString = 'INSERT INTO authentication SET time_start=?, time_end=?, token=?, users_UserID=?';
+						  var date = new Date();
+						  var startTime = date.getTime();
+						  var endTime = date.getTime() + time_two_weeks;
+						  var access = rows[0].accessLevel;
+						  var firstname = rows[0].members_firstname;
+						  var userID = rows[0].UserID;
+						  var expires = endTime - startTime;
+						  global.connection.query(queryString, [startTime, endTime, uuid, userID], function(err, rows, fields){
+						  	if(err){
+						  		 console.log(err);
+						  		 json = {authenticated:'false'};
+								 res.send(prefix+JSON.stringify(json));
+						  	}
+						  	else{
+						  		json = {token:uuid, accessLevel:access, username:req.headers.username, name:firstname, userID:userID, expires:expires};
+								res.send(prefix+JSON.stringify(json));
+						  	} 
+						  });
+						}
+					}
+				});
+			
+			});
 		}
 	});
 });

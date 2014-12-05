@@ -3,7 +3,8 @@ var app = express();
 var router = require('./routes/routes.js');
 var path = require('path');
 var prompt = require('prompt');
-var Database = require('./data/database.js')
+var Database = require('./data/database.js');
+var crypto = require('crypto');
 
 
 var db;
