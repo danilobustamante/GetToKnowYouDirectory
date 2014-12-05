@@ -51,8 +51,6 @@ prompt.get(schema, function (err, result) {
 
 
 app.use('/', router);
-app.use('/login', router);
-app.use('/logout', router);
 
 /*Error Handling*/
 app.use(function(req, res, next) {

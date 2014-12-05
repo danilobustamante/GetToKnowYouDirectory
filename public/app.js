@@ -4,9 +4,10 @@
 	this.password = 'world';
 	app.controller('loginController', [
 		'$scope',
+		'ipCookie',
 		'$modal',
 		'loginService',
-		function($scope, $modal, loginService)
+		function($scope, ipCookie, $modal, loginService)
 		{
 			angular.extend($scope, {
 				state: {
@@ -21,15 +22,45 @@
 				wardsManagingIndex: 0,
 				previewMembers: [],
 				members: [],
+				token: '',
+				userID:-1,
+				init: function()
+				{
+					$scope.token = ipCookie('token');
+					$scope.userID = ipCookie('userID');
+					if($scope.token && $scope.userID){
+						loginService.loginCookie($scope.userID, $scope.token).then(function(data){
+							if(data.authenticated === 'true'){
+								$scope.state.authenticated = true;
+								$scope.accessLevel = data.accessLevel;
+								$scope.name = data.name;
+								loginService.getWards($scope.userID, $scope.token).then(function(wards){
+									$scope.wards = wards;
+									$scope.state.managing = true;
+									$scope.wardsManagingIndex = 0;
+									//get preview member data
+									loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward, $scope.userID, $scope.token).then(function(members){
+										$scope.previewMembers = members;
+									});
+								});
+							}
+						});
+					}
+				},
 				login: function()
 				{
 					username = this.username;
 					password = this.password;
 					loginService.login().then(function(data){
-						if(data.authenticated === 'true'){
+						if(data.token){
 							$scope.state.authenticated = true;
+							$scope.token = data.token;
+							$scope.userID = data.userID;
 							$scope.accessLevel = data.accessLevel;
 							$scope.name = data.name;
+							//set cookie
+							ipCookie('token', $scope.token, {expires:data.expires, expirationUnit:'seconds'});
+							ipCookie('userID', $scope.userID, {expires:data.expires, expirationUnit:'seconds'});
 							var modalInstance = $modal.open({
 							      templateUrl: 'loginModalSuccessContent.html',
 							      controller: 'ModalInstanceCtrl',
@@ -40,12 +71,12 @@
 							      }
 							   });
 							//get ward data
-							loginService.getWards().then(function(wards){
+							loginService.getWards($scope.userID, $scope.token).then(function(wards){
 								$scope.wards = wards;
 								$scope.state.managing = true;
 								$scope.wardsManagingIndex = 0;
 								//get preview member data
-								loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+								loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward, $scope.userID, $scope.token).then(function(members){
 									$scope.previewMembers = members;
 								});
 							});
@@ -67,7 +98,7 @@
 				},
 				logout: function()
 				{
-					loginService.logout().then(function(data){
+					loginService.logout($scope.userID, $scope.token).then(function(data){
 						//TODO notifty server of end of session
 						//$scope.state.authenticated = false;
 						var modalInstance = $modal.open({
@@ -81,12 +112,18 @@
 					    });
 						username = 'hello';
 						password = 'world';
-						$scope.state.authenticated = true;
 						$scope.accessLevel = 1000;
 						$scope.name = 'Hello World';
 						$scope.wards = [];
 						$scope.state.authenticated = false;
+						$scope.state.managing = false;
+						$scope.state.addAdmin = false;
+						$scope.state.viewDirectory = false;
+						$scope.token = '';
 						$scope.previewMembers = [];
+						//remove cookie
+						ipCookie.remove('token');
+						ipCookie.remove('userID');
 					});
 				},
 				changeManagingWard: function(index)
@@ -96,7 +133,7 @@
 					$scope.state.managing = true;
 					$scope.state.viewDirectory = false;
 					//get preview member data
-					loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+					loginService.getDirectoryPreview($scope.wards[$scope.wardsManagingIndex].ward, $scope.userID, $scope.token).then(function(members){
 						$scope.previewMembers = members;
 					});
 				},
@@ -111,13 +148,15 @@
 					$scope.state.addAdmin = false;
 					$scope.state.managing = false;
 					$scope.state.viewDirectory = true;
-					loginService.getDirectory($scope.wards[$scope.wardsManagingIndex].ward).then(function(members){
+					loginService.getDirectory($scope.wards[$scope.wardsManagingIndex].ward, $scope.userID, $scope.token).then(function(members){
 						$scope.members = members;
 					});
 				}
 			});
 		}
+
 	]);
+
 
 	// Please note that $modalInstance represents a modal window (instance) dependency.
 	// It is not the same as the $modal service used above.
@@ -146,29 +185,36 @@
 						return response.data;
 					});
 			},
-			logout: function()
+			loginCookie: function(userID, token)
 			{
-				return $http.get('/logout').then(function (response) {
+				 return $http.get('/loginCookie',{ headers: {'userID':userID, 'Authentication':token}
+					}).then(function (response) {
+						return response.data;
+					});
+			},
+			logout: function(userID, token)
+			{
+				return $http.get('/logout',{ headers:{'userID':userID, 'Authentication':token}}).then(function (response) {
 					return response.data;
 				});
 			},
-			getWards: function()
+			getWards: function(userID, token)
 			{
-				return $http.get('/wards',{ headers: {'Username': username}
+				return $http.get('/wards',{ headers: {'userID':userID, 'Authentication':token}
 					}).then(function(response) {
 						return response.data;
 					});
 			},
-			getDirectoryPreview: function(name)
+			getDirectoryPreview: function(name, userID, token)
 			{
-				return $http.get('/directoryPreview',{ headers: {'Ward': name}
+				return $http.get('/directoryPreview',{ headers: {'Ward': name, 'userID':userID, 'Authentication':token}
 					}).then(function(response) {
 						return response.data;
 					});
 			},
-			getDirectory: function(name)
+			getDirectory: function(name, userID, token)
 			{
-				return $http.get('/directory',{ headers: {'Ward': name}
+				return $http.get('/directory',{ headers: {'Ward': name, 'userID':userID, 'Authentication':token}
 					}).then(function(response) {
 						return response.data;
 					});
@@ -225,4 +271,4 @@
 			}
 		}
 	}]);
-})(angular.module('loginApp', ['ui.bootstrap']));
+})(angular.module('loginApp', ['ui.bootstrap', 'ipCookie']));

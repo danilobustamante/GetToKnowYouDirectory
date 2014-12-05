@@ -9,13 +9,14 @@
 		<script src='dependencies/bootstrap-3.3.1-dist/dist/js/bootstrap.min.js'></script>
 		<!-- AngularJS -->
 		<script src='dependencies/angular.min.js'></script>
+		<script src='dependencies/angular-cookie.min.js'></script>
 		<script src='dependencies/ui-bootstrap-tpls-0.12.0.min.js'></script>
 		<!-- Our styles and code -->
 		<link rel="stylesheet" href="styles.css">
 		<script src='app.js'></script>
 	</head>
 	<body>
-		<div class="main-page" ng-app='loginApp' ng-controller='loginController as loginCtrl'>
+		<div class="main-page" ng-app='loginApp' ng-controller='loginController as loginCtrl' ng-init='init()'>
 
 			<!-- header -->
 			<nav class='navbar navbar-default navbar-inverse navbar-fixed-top'>
