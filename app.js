@@ -4,7 +4,8 @@ var router = require('./routes/routes.js');
 var path = require('path');
 var prompt = require('prompt');
 var Database = require('./data/database.js');
-var crypto = require('crypto');
+var bodyParser = require('body-parser');
+var compression = require('compression');
 
 
 var db;
@@ -12,6 +13,9 @@ var db;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(compression());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.listen(3000, function() {
 	console.log('Express Server Listening on Port 3000');

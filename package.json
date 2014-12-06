@@ -10,10 +10,13 @@
   "author": "Matthew Cannon",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.10.0",
+    "compression": "^1.2.1",
     "crypto": "0.0.3",
     "ejs": "^1.0.0",
     "express": "^4.10.2",
     "hat": "0.0.3",
+    "json": "^9.0.2",
     "mysql": "^2.5.3",
     "path": "^0.4.9",
     "prompt": "^0.2.14"

@@ -1,0 +1,15 @@
+<div class="modal-header">
+    <h3 class="modal-title">Please Confirm Submission</h3>
+</div>
+<div class="modal-body">
+	<p>Username:            <b>{{username}}</b></p>
+	<p>Email:               <b>{{email}}</b></p>
+	<p>First Name:          <b>{{firstname}}</b></p>
+	<p>Last Name:           <b>{{lastname}}</b></p>
+	<p>Authorization Level: <b>{{accessLevel.name}}</b></p>
+	<p>Ward:                <b>{{ward.ward}}</b></p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+</div>

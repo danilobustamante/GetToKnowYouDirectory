@@ -7,32 +7,55 @@
 	<div class="container div-admin">
 		<ul>
 		<li class="list-admin-text">Username</li>
-		<li class="list-admin-input"><input ng-model='username' class='' type="text" name="username" placeholder="Username"></li>
+		<li class="list-admin-input"><input ng-model='username' class='' type="text" name="username" placeholder="Username" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
 		</ul>
 	</div>
 	<!--<span class='navbar-text'>Password:</span>-->
 	<div class="container div-admin">
 		<ul>
 		<li class="list-admin-text">Password</li>
-		<li class="list-admin-input"><input ng-model='password' class='' type="password" name="password" placeholder="Password"></li>
+		<li class="list-admin-input"><input ng-model='password' class='' type="password" name="password" placeholder="Password" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
 		</ul>
 	</div>
 	<div class="container div-admin">
 		<ul>
 		<li class="list-admin-text">Confirm Password</li>
-		<li class="list-admin-input"><input ng-model='passwordConfirm' class='' type="password" name="password" placeholder="Confirm Password"></li>
+		<li class="list-admin-input"><input ng-model='passwordConfirm' class='' type="password" name="confirm_password" placeholder="Confirm Password" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
 		</ul>
 	</div>
-	<div class='right'>
-		<ul >
-			<li><a>Account<span class='caret'></span></a>
-				<ul>
-					<li><a>Add Admin</a></li>
-					<li><a>My Information</a></li>
-					<li><a>Edit My Settings</a></li>
-					<li><a>Logout</a></li>
-				</ul>
-			</li>
+	<div class="container div-admin">
+		<ul>
+		<li class="list-admin-text">Email</li>
+		<li class="list-admin-input"><input ng-model='email' class='' type="text" name="email" placeholder="example@example.com" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
+		</ul>
+	</div>
+	<div class="container div-admin">
+		<ul>
+		<li class="list-admin-text">First Name</li>
+		<li class="list-admin-input"><input ng-model='firstname' class='' type="text" name="firstname" placeholder="Firstname" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
+		</ul>
+	</div>
+	<div class="container div-admin">
+		<ul>
+		<li class="list-admin-text">Last Name</li>
+		<li class="list-admin-input"><input ng-model='lastname' class='' type="text" name="lastname" placeholder="Lastname" ng-enter='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)'></li>
+		</ul>
+	</div>
+	<div class="container div-admin">
+		<ul>
+		<li class="list-admin-text">Authorization Level</li>
+		<li class="list-admin-input"><div dropdown-select="adminDDSelect" dropdown-model="adminDDSelected" dropdown-item-label="name"></div></li>
+		</ul>
+    </div>
+    <div class="container div-admin">
+		<ul>
+		<li class="list-admin-text">Ward</li>
+		<li class="list-admin-input"><div dropdown-select="wards" dropdown-model="wardDDSelected" dropdown-item-label="ward"></div></li>
+		</ul>
+    </div>
+	<div class="container div-admin">
+		<ul>
+		<li class="list-admin-input"><button class='' ng-click='addAdmin(username,password,passwordConfirm,email,firstname,lastname,adminDDSelected,wardDDSelected)' id='addAdminButton'>Submit</button></li>
 		</ul>
 	</div>
 </div>
