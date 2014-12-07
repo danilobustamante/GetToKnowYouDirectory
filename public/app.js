@@ -62,12 +62,15 @@
 							$scope.accessLevel = data.accessLevel;
 							$scope.name = data.name;
 							//set cookie
-							ipCookie('token', $scope.token, {expires:data.expires, expirationUnit:'seconds'});
-							ipCookie('userID', $scope.userID, {expires:data.expires, expirationUnit:'seconds'});
+							ipCookie('token', $scope.token, {expires:data.expires, expirationUnit:'seconds', secure:true});
+							ipCookie('userID', $scope.userID, {expires:data.expires, expirationUnit:'seconds', secure:true});
 							var modalInstance = $modal.open({
 							      templateUrl: 'loginModalSuccessContent.html',
 							      controller: 'ModalInstanceCtrl',
 							      resolve: {
+							      	title: function() {
+							      		return 'Welcome!';
+							      	},
 							        name: function () {
 							          return $scope.name;
 							        }
@@ -89,6 +92,9 @@
 							      templateUrl: 'loginModalFailureContent.html',
 							      controller: 'ModalInstanceCtrl',
 							      resolve: {
+							      	title: function(){
+							      		return 'Please Try Again';
+							      	},
 							      	name: function (){
 							      		return $scope.name;
 							      	}
@@ -108,9 +114,12 @@
 					      templateUrl: 'logoutModalSuccessContent.html',
 					      controller: 'ModalInstanceCtrl',
 					      resolve: {
-					      	name: function (){
-							      		return $scope.name;
-							      	}
+					      	title: function (){
+					      		return 'Logout';
+					      	},
+				      		name: function (){
+					      		return $scope.name;
+					      	}
 					      }
 					    });
 						username = 'hello';
@@ -153,7 +162,6 @@
 				},
 				addAdmin: function(username, password, passwordConfirm, email, firstname, lastname, accessLevel, ward)
 				{
-					
 					var requiredText;
 					var requiredField = ' is a required field';
 					//email regex
@@ -216,6 +224,13 @@
 					      }
 					    });
 
+						this.username = '';
+						this.password = '';
+						this.passwordConfirm = '';
+						this.email = '';
+						this.firstname = '';
+						this.lastname = '';
+
 					    //resolve modalInstance if OK is clicked
 					    modalInstance.result.then(function(data){
 					    	//send data
@@ -252,10 +267,16 @@
 								      	}
 								    });
 								    modalInstance.result.then(function(data){
-										$scope.adminDDSelected={name:'Select Authorization'};
-										$scope.wardDDSelected={ward:'Select Ward'};
-										location.reload();
+										
 									});
+									usernameAdmin = '';
+									passwordAdmin = '';
+									passwordConfirmAdmin = '';
+									emailAdmin = '';
+									firstnameAdmin = '';
+									lastnameAdmin = '';
+									$scope.adminDDSelected={name:'Select Authorization'};
+									$scope.wardDDSelected={ward:'Select Ward'};
 								}
 					    	});
 					    });
@@ -375,7 +396,7 @@
 				    	//console.log(data);
 				  	}).then(function(response){
 				  		return response.data;
-				  	});;
+				  	});
 			}
 		};
 	}]);

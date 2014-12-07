@@ -6,6 +6,8 @@ var prompt = require('prompt');
 var Database = require('./data/database.js');
 var bodyParser = require('body-parser');
 var compression = require('compression');
+var pem = require('pem');
+var https = require('https');
 
 
 var db;
@@ -17,9 +19,22 @@ app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+pem.createCertificate({days:1, selfSigned:true}, function(err, keys){
+	var https_server = https.createServer({key: keys.serviceKey, cert: keys.certificate}, app)
+	//listen for requests
+	var server = https_server.listen(3000, 'localhost', function () {
+
+		var host = server.address().address
+		var port = server.address().port
+
+		console.log('Example Design using HTTPS at https://%s:%s',host,port) 
+
+	})
+})
+/*
 app.listen(3000, function() {
 	console.log('Express Server Listening on Port 3000');
-});
+});*/
 
 
 /*Create Database*/

@@ -8,10 +8,11 @@ var time_two_weeks = 60*60*24*14*1000;
 
 router.get('/', function(req, res){
 	//res.send('Hello from the Router');
-	res.render('index', {
+	/*res.render('index', {
     env: 'dev',
     title: 'YSA Ward Directory'
-  });
+  });*/
+	res.status(200).sendFile('./public/index.html');
 });
 
 router.get('/login', function(req, res){
@@ -242,8 +243,6 @@ router.get('/adminAddPrivleges', function(req, res){
 					global.connection.query(queryString, [level], function(err, rows, fields){
 						if(err || !rows){
 							console.log(err);
-							console.log(rows);
-							console.log(fields);
 							res.status(500).send();
 						}
 						else{
