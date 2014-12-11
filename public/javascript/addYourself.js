@@ -80,8 +80,10 @@ angular.module('directoryApp').controller('AddYourselfCtrl', ['$scope', '$modal'
     else{
       var answers = [{id:1,response:name},{id:2,response:phone},{id:3,response:email}];
       var wardName = $scope.ward.name;
+      $scope.fullname = '';
+      $scope.phone = '';
+      $scope.email = '';
       addYourselfService.submitSurvey($scope.ward.id,answers,name).then(function (response){
-          console.log('here');
           var modalInstance = $modal.open({
           templateUrl: 'requiredFieldModal.html',
           controller: 'ModalInstanceCtrl',
@@ -93,6 +95,9 @@ angular.module('directoryApp').controller('AddYourselfCtrl', ['$scope', '$modal'
               return 'You have been successfully added to the '+wardName;
             }
           }
+        });
+        modalInstance.result.then(function (data){
+          window.location = '/';
         });
       });
     }

@@ -95,7 +95,10 @@ angular.module('directoryApp').controller('DatePickerCtrl', ['$scope', '$modal',
         //open modal to display success
         var title = '';
         var displayText = '';
-        if(response) {title='Success'; displayText='Survey Open Time succesfully updated!';}
+        if(response) {
+          title='Success';
+          displayText='Survey Open Time succesfully updated!';
+        }
         else {title='Please Try Again'; displayText='An error occurred while trying to update the survey, please contact your system adminstrator if this problem persists'};
       
         var modalInstance = $modal.open({
