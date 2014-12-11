@@ -19,7 +19,7 @@ app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-pem.createCertificate({days:1, selfSigned:true}, function(err, keys){
+/*pem.createCertificate({days:1, selfSigned:true}, function(err, keys){
 	var https_server = https.createServer({key: keys.serviceKey, cert: keys.certificate}, app)
 	//listen for requests
 	var server = https_server.listen(3000, 'localhost', function () {
@@ -30,11 +30,11 @@ pem.createCertificate({days:1, selfSigned:true}, function(err, keys){
 		console.log('Example Design using HTTPS at https://%s:%s',host,port) 
 
 	})
-})
-/*
+})*/
+
 app.listen(3000, function() {
 	console.log('Express Server Listening on Port 3000');
-});*/
+});
 
 
 /*Create Database*/

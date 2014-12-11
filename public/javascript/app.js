@@ -28,7 +28,6 @@
 				adminDDSelect: [],
 				adminDDSelected: {},
 				wardDDSelected: {},
-				
 				init: function()
 				{
 					$scope.token = ipCookie('token');

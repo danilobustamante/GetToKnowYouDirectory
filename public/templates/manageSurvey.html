@@ -1,0 +1,82 @@
+<div class="container">
+	<h1 class="left">
+		<b>{{wards[wardsManagingIndex].ward}} Survey</b>
+	</h1>
+</div>
+<ul ng-controller='SurveyCtrl'>
+	<div class='container'>
+		<li class='manage-survey-list'>
+			<h2>Open Survey</h2>
+				<ul ng-controller = 'DatePickerCtrl'>
+					<li style='display:block'>
+						<h1 ng-if='surveyOpen'><b>Status:<font color='blue'>OPEN</font></b></h1>
+						<h1 ng-if='!surveyOpen'><b>Status:<font color='red'>CLOSED</font></b></h1>
+					</li>
+					<li class='manage-survey-list-list'>
+						<h4> Start Time </h4>
+						<div dateclass="row">
+							<div class="">
+								<p class="input-group">
+									<input type="text" class="form-control date-pick" datepicker-popup="{{format}}" ng-model="dtBegin" is-open="openedBegin" min-date="minDate" init-date='dtBegin' datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+									<span class="date-pick-btn">
+										<button type="button" class="btn btn-default" ng-click="openBegin($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+									</span>
+								</p>
+							</div>
+						</div>
+					</li>
+					<li class='manage-survey-list-list'>
+						<h4> End Time </h4>
+						<div dateclass="row">
+							<div class="">
+								<p class="input-group">
+									<input type="text" class="form-control date-pick" datepicker-popup="{{format}}" ng-model="dtEnd" is-open="openedEnd" min-date="minDate" init-date='dtEnd' datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+									<span class="date-pick-btn">
+										<button type="button" class="btn btn-default" ng-click="openEnd($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+									</span>
+								</p>
+							</div>
+						</div>
+					</li>
+					<li class='manage-survey-list-list'>
+						<div>
+							<button type='button' ng-click='submitOpenSurvey(dtBegin,dtEnd)' class='btn btn-success' style='top:38px;position:relative'>Submit</button>
+						</div>
+					</li>
+				</ul>
+		</li>
+	</div>
+	<div class='container'>	
+			<li class='manage-survey-list'>
+				<h2>Survey Questions</h2>
+			</li>	
+		<div class="container">
+			<ul class="manage-survey-ulist">
+				<div class='container'>
+					<li>
+						<ul class='survey-ulist'>
+							<li class='list-survey-text'><p><b>Please Enter Your Full Name</b></p></li>
+							<li class='list-survey-input'><input class='survey-input'></input></li>
+						</ul>
+					</li>
+				</div>
+				<div class='container'>
+					<li>
+						<ul class='survey-ulist'>
+							<li class='list-survey-text'><p><b>Please Enter Your Phone Number</b></p></li>
+							<li class='list-survey-input'><input class='survey-input'></input></li>
+						</ul>
+					</li>
+				</div>
+				<div class='container'>
+					<li>
+						<ul class='survey-ulist'>
+							<li class='list-survey-text'><p><b>Please Enter Your Email Address</b></p></li>
+							<li class='list-survey-input'><input class='survey-input'></input></li>
+						</ul>
+					</li>
+				</div>
+			</ul>
+		</div>
+	</div>
+</ul>

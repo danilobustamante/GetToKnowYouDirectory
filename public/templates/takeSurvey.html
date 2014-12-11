@@ -1,0 +1,36 @@
+<div class='container'>	
+		<li class='manage-survey-list'>
+			<h2>{{ward.name}} Survey Questions</h2>
+		</li>	
+	<div class="container">
+		<ul class="manage-survey-ulist">
+			<div class='container'>
+				<li>
+					<ul class='survey-ulist'>
+						<li class='list-survey-text'><p><b>Please Enter Your Full Name</b></p></li>
+						<li class='list-survey-input'><input class='survey-input' ng-model='fullname' ng-enter='submitSurvey(fullname,phone,email)'></input></li>
+					</ul>
+				</li>
+			</div>
+			<div class='container'>
+				<li>
+					<ul class='survey-ulist'>
+						<li class='list-survey-text'><p><b>Please Enter Your Phone Number</b></p></li>
+						<li class='list-survey-input'><input class='survey-input' ng-model='phone' ng-enter='submitSurvey(fullname,phone,email)'></input></li>
+					</ul>
+				</li>
+			</div>
+			<div class='container'>
+				<li>
+					<ul class='survey-ulist'>
+						<li class='list-survey-text'><p><b>Please Enter Your Email Address</b></p></li>
+						<li class='list-survey-input'><input class='survey-input' ng-model='email' ng-enter='submitSurvey(fullname,phone,email)'></input></li>
+					</ul>
+				</li>
+			</div>
+			<div>
+				<button class='btn btn-success' ng-click='submitSurvey(fullname,phone,email)'>Submit</button>
+			</div>
+		</ul>
+	</div>
+</div>

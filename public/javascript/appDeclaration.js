@@ -1,0 +1,1 @@
+angular.module('directoryApp', ['ui.bootstrap', 'ipCookie', 'ngDropdowns']);

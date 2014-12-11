@@ -1,0 +1,31 @@
+<div>
+	<div class="container">
+		<div ng-if='openWards'>
+			<h1 class="left">
+				<b>Please Select the Ward and Stake from the lists below!</b>
+			</h1>
+		</div>
+		<div ng-if='!openWards'>
+			<h2 class='left'>
+				<b>Sorry, No Wards are currently accepting new Members. Please try again latter!</b>
+			</h2>
+		</div>
+	</div>
+	<div ng-if='openWards'>
+		<div class="container div-admin">
+			<ul>
+			<li class="list-yourself-text"><h4>Stake</h4></li>
+			<li class="list-yourself-input"><div class='dropdown' dropdown-select="stakeDDSelect" dropdown-model="stakeDDSelected" dropdown-item-label="name"></div></li>
+			</ul>
+	    </div>
+	    <div class="container div-admin">
+			<ul>
+			<li class="list-yourself-text"><h4>Ward</h4></li>
+			<li class="list-yourself-input"><div class='dropdown' dropdown-select="wardDDSelect" dropdown-model="wardDDSelected" dropdown-item-label="name"></div></li>
+			</ul>
+	    </div>
+	    <div class='container div-admin' style='left:40px;position:relative'>
+	    	<button class='btn btn-success' ng-click='startSurvey(wardDDSelected)'>Go</button>
+	    </div>
+	</div>
+</div>

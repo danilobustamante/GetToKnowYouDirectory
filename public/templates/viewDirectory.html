@@ -1,13 +1,40 @@
-<div class="container">
-	<h1 class="left">
-		<b>{{wards[wardsManagingIndex].ward}}</b>
-	</h1>
-</div>
-<div class="container">
-	<ul class="preview-ulist-directory">
-		<li ng-repeat='member in members' class="preview-list-directory">
-			<img class="img-preview-directory" ng-src="{{member.img}}">
-				<br><div class="text-preview-directory">{{member.firstname}} {{member.lastname}}</div>
-		</li>
-	</ul>
+<div ng-controller ='ViewDirectoryCtrl'>
+	<div ng-if='!viewingMember' class="container">
+		<div class="container">
+			<h1 class="left">
+				<b>{{wards[wardsManagingIndex].ward}}</b>
+			</h1>
+		</div>
+		<ul class="preview-ulist-directory">
+			<li ng-repeat='member in members' class="preview-list-directory">
+				<a href='' ng-click='viewMember(member)' class='directory-link'>
+					<img class="img-preview-directory" ng-src="{{member.img}}">
+					<br><div class="text-preview-directory">{{member.firstname}} {{member.lastname}}</div>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div ng-if='viewingMember' class='container'>
+		<div class="container">
+			<h1 class="left">
+				<b><a href='' ng-click='unViewMember()' style='font-color:black'>{{wards[wardsManagingIndex].ward}}</a> - {{memberViewing.firstname}} {{memberViewing.lastname}}</b>
+			</h1>
+		</div>
+		<div class='container directory-positioning'>
+			<ul>
+				<li class='directory-view-list directory-view-div '><img class='directory-view-image' ng-src='{{memberViewing.img}}' class='left'></li>
+				<li class='directory-view-list'>
+
+								<li class='directory-view-list-inner'><h2><b>{{noResponseText}}</b></h2></li>
+						<div ng-if='hasResponses'>
+							<table class='directory-table'>
+								<tr ng-repeat='response in surveyResponses'>
+									<td class='directory-column'><span class='directory-font'>{{response.name}}</span></td><td class='directory-column'><span class='directory-font'>{{response.answer}}</span></td>
+								</tr>
+							</table>
+						</div>
+				</li>
+			</ul>
+		</div>
+	</div>
 </div>

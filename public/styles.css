@@ -14,6 +14,22 @@ a {
 	cursor: pointer;
 }
 
+.directory-link:hover{
+	text-decoration: none;
+}
+
+.directory-link:active{
+	text-decoration: none;
+}
+
+.directory-link:visited{
+	text-decoration: none;
+}
+
+.directory-link:link{
+	text-decoration: none;
+}
+
 .btn + .btn {
 	margin-left: 16px;
 }
@@ -119,6 +135,126 @@ a {
 .list-admin-input{
 	float:left;
 	display: block;
+}
+
+.list-yourself-text{
+	float:left;
+	display:block;
+	width:150px;
+}
+
+.list-yourself-input{
+	top: 3px;
+	position: relative;
+	float:left;
+	display: block;
+}
+
+.dropdown{
+	width: 200px;
+}
+
+.manage-survey-ulist{
+	list-style-type: decimal;
+}
+
+.manage-survey-list{
+	display: block;
+	padding: 10px;
+	float: top;
+}
+
+.manage-survey-list-list{
+	display: block;
+	float: left;
+	margin-right: 50px;
+}
+
+.date-pick{
+	width: 300px;
+}
+
+.date-pick-btn{
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.survey-ulist{
+	position: relative;
+	top: -20px;
+	left: -20px;
+}
+
+.list-survey-text{
+	float:left;
+	display:block;
+	width:250px;
+}
+
+.list-survey-input{
+	float:left;
+	display: block;
+}
+
+.survey-input{
+	width: 200px;
+}
+
+.hidden{
+	background: transparent;
+    border: none !important;
+    font-size:0;
+}
+
+.directory-view-div{
+	max-width: 400px;
+	max-height: 800px;
+}
+
+.directory-view-image{
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.directory-view-list{
+	float: left;
+ 	display: block;
+ 	height: auto;
+}
+
+.directory-view-list-inner{
+	display: block;
+	position: relative;
+	white-space: pre-wrap;
+	left: 40px;
+	height: auto;
+}
+
+.directory-positioning{
+	position: relative;
+	left: -20px;
+}
+
+.directory-font{
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 20px; 
+}
+
+.directory-table{
+    /*border: 1px solid black;*/
+    table-layout: fixed;
+    width: 400px;
+    position: relative;
+    top: 30px;
+    left: 50px;
+}
+
+.directory-column{
+    /*border: 1px solid black;
+    overflow: hidden;
+    width: 100px;*/
+    width:1%;
+    white-space:nowrap;
 }
 
 em {

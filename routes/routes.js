@@ -5,6 +5,7 @@ var consts = require('./../data/consts');
 var router = express.Router();
 var json = require('json');
 var time_two_weeks = 60*60*24*14*1000;
+var async = require('async');
 
 router.get('/', function(req, res){
 	//res.send('Hello from the Router');
@@ -342,7 +343,7 @@ router.get('/directoryPreview', function(req, res){
 router.get('/directory', function(req, res){
 	authenticate(req.headers.authentication, req.headers.userid, function(valid){
 		if(valid){
-			var queryString = 'SELECT members_firstname, members_lastname, imageLocation FROM members, wards WHERE ' +
+			var queryString = 'SELECT MemberID, members_firstname, members_lastname, imageLocation FROM members, wards WHERE ' +
 								'wards_name=? AND wards_WardID = WardID';
 			var prefix = ")]}',\n";
 			var membersArray = [];
@@ -352,7 +353,7 @@ router.get('/directory', function(req, res){
 				}
 				else{
 					for(var i in rows){
-						var object = {'firstname':rows[i].members_firstname, 'lastname':rows[i].members_lastname, 'img':rows[i].imageLocation};
+						var object = {'id':rows[i].MemberID, 'firstname':rows[i].members_firstname, 'lastname':rows[i].members_lastname, 'img':rows[i].imageLocation};
 						membersArray[i] = object;
 					}
 					res.send(prefix+JSON.stringify(membersArray));
@@ -364,6 +365,220 @@ router.get('/directory', function(req, res){
 		}
 	});
 });
+
+router.get('/surveyTimes', function(req, res){
+	authenticate(req.headers.authentication, req.headers.userid, function(valid){
+		if(valid){
+			var queryString = 'SELECT start_time, end_time FROM survey WHERE wards_wardID=?';
+			var prefix = ")]}',\n";
+			global.connection.query(queryString, [req.headers.wardid], function(err, rows, fields){
+				if (err || !rows || rows[0]===undefined || !rows[0].start_time || !rows[0].end_time){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				else{
+					var json = {'start_time':rows[0].start_time, 'end_time':rows[0].end_time};
+					res.send(prefix+JSON.stringify(json));
+				}
+			});
+		}
+		else{
+			res.status(401).send('Access Denied');
+		}
+	});
+});
+
+router.post('/surveyTimes', function(req, res){
+	authenticate(req.body.Authentication, req.body.userID, function(valid){
+		if(valid){
+			var queryString = 'SELECT wards_WardID, users_UserID FROM wards_has_users WHERE wards_wardID=? AND users_UserID=?';
+			global.connection.query(queryString, [req.body.wardID, req.body.userID], function(err, rows, fields){
+				if (err){
+					console.log(err);
+					res.status(500).send('Internal Server Error');
+				}
+				else if(!rows || rows[0]===undefined || rows[0].wards_WardID!=req.body.wardID || rows[0].users_UserID!=req.body.userID){
+					res.status(401).send('Access Denied');
+				}
+				else{
+					queryString = 'UPDATE survey SET start_time=?, end_time=? WHERE wards_wardID=?';
+					global.connection.query(queryString, [req.body.start_time, req.body.end_time,req.body.wardID], function(err, rows, fields){
+						if(err){
+							res.status(500).send('Internal Server Error');
+						}
+						else{
+							res.status(200).send('OK');
+						}
+					});
+				}
+			});
+		}
+		else{
+			res.status(401).send('Access Denied');
+		}
+	});
+});
+
+router.get('/surveysOpen', function(req, res){
+	var date = new Date();
+	var time = date.getTime();
+	var queryString = 'SELECT WardID, wards_name, StakeID, stakes_name FROM stakes, wards, survey WHERE stakes_StakeID=StakeID '+
+						'AND wards_WardID=WardID AND start_time<? AND end_time>?';
+	var prefix = ")]}',\n";
+	global.connection.query(queryString, [time,time], function(err, rows, fields){
+		if(err){
+			console.log(err);
+			res.status(500).send();
+		}
+		else{
+			res.send(prefix+JSON.stringify(rows));
+		}
+	});
+});
+
+router.get('/surveyMemberResponse', function(req, res){
+	//authenticate
+	authenticate(req.headers.authentication, req.headers.userid, function(valid){
+		if(valid){
+			var queryString = 'SELECT DISTINCT response, reference_name, questionIndex FROM survey_has_questions, ' +
+								'questions, answers, members_has_answers WHERE members_MemberID=? AND ' +
+								'answers_AnswerID=AnswerID AND answers.questions_QuestionID=QuestionID AND ' +
+								'answers.questions_QuestionID=survey_has_questions.questions_QuestionID AND ' +
+								'QuestionID=survey_has_questions.questions_QuestionID';
+			global.connection.query(queryString, [req.headers.memberid], function(err, rows, fields){
+				if(err){
+					console.log(err);
+					res.status(500).send();
+				}
+				else{
+					var json = [];
+					for(var i in rows){
+						var object = {'index':rows[i].questionIndex, 'name':rows[i].reference_name, 'answer':rows[i].response};
+						json[i] = object;
+					}
+					json.sort(compareIndex);
+					var prefix = ")]}',\n";
+					res.status(200).send(prefix+JSON.stringify(json));
+				}
+			});
+		}
+		else{
+			res.status(401).send();
+		}
+	});
+});
+
+function compareIndex(a,b) {
+  if (a.index< b.index)
+     return -1;
+  if (a.index > b.index)
+    return 1;
+  return 0;
+}
+
+router.post('/submitSurvey', function(req, res){
+	//console.log(req.body.answers);
+	try{
+		var nameArray = req.body.name.split(' ');
+		var first = nameArray[0];
+		var last = nameArray[nameArray.length-1];
+		//console.log(first);
+		//console.log(last);
+		if(nameArray.length<2) throw 'Only First Name Given';
+		if(!req.body.wardID) throw 'No Ward ID given';
+		var date = new Date();
+		var time = date.getTime();
+		var queryString = "SELECT wards_WardID FROM survey WHERE wards_WardID=? AND ?>start_time AND ?<end_time";
+		global.connection.query(queryString, [req.body.wardID,time,time], function(err, rows, fields){
+			if(err || !rows){
+				throw err;
+			}
+			else if(rows[0].wards_WardID!=req.body.wardID){
+				//console.log('Failed to wardID:'+rows[0]+':'+req.body.wardID);
+				res.status(500).send();
+			}
+			else{
+				global.connection.beginTransaction(function(err) {
+					if(err){
+						//console.log('Failed to INSERT start: '+err);
+						global.connection.rollback(function() { });
+						res.status(500).send();
+					}
+					else{
+						queryString = "INSERT INTO members SET members_firstname=?, members_lastname=?, wards_WardID=?";
+						global.connection.query(queryString, [first,last,req.body.wardID], function(err, info){
+							if(err){
+								//console.log('Failed to INSERT member: '+err);
+								global.connection.rollback(function() { });
+								res.status(500).send(err)
+							}
+							else{
+								var membersID = info.insertId;
+								//console.log('MembersID is:'+membersID);
+								async.each(req.body.answers, addMemberHelper.bind(null,membersID), function(err){
+									if(err){
+										global.connection.rollback(function() { });
+										res.status(500).send();
+										return;
+									}
+									else{
+										//console.log('committing changes to database');
+										global.connection.commit(function(err) {
+											if(err){
+												global.connection.rollback(function() { });
+												res.status(500).send
+											}
+											else{
+												res.status(200).send();
+											}
+										});
+									}
+								});
+								
+							}
+						});
+					}
+				});
+			}
+		});
+
+	} catch(err){
+		console.log('Caught Error: '+err);
+		res.status(500).send(err);
+	}
+});
+
+function addMemberHelper(membersID, array, callback) {
+	queryString = "INSERT INTO answers SET response=?,questions_QuestionID=?";
+	//console.log('Members:'+membersID);
+	global.connection.query(queryString, [array.response, array.id], function(err, info){
+		//console.log('query executed');
+		if(err){
+			//console.log('Failed to INSERT answer: '+err);
+			callback(err);
+			//global.connection.rollback(function() { });
+			//res.status(500).send(err);
+			//times = req.body.answers.length+1;
+
+		}
+		else{
+			var answersID = info.insertId;
+			//console.log(answersID);
+			queryString = "INSERT INTO members_has_answers SET members_MemberID=?, answers_AnswerID=?";
+			global.connection.query(queryString, [membersID, answersID], function(err, info){
+				if(err){
+					//console.log('Failed to INSERT shared: '+err);
+					//global.connection.rollback(function() { });
+					//res.status(500).send(err);
+					callback(err);
+				}
+				else{
+					callback();
+				}
+			});
+		}
+	});
+}
 
 var authenticate = function(uuid, userID, callback){
 	var queryString = 'SELECT time_end FROM authentication WHERE token=? AND users_userID=?';
