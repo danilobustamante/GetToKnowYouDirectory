@@ -157,7 +157,7 @@ angular.module('directoryApp').controller('loginController', ['$scope', 'ipCooki
 		$scope.state.managing = false;
 		$scope.state.viewDirectory = false;
 		$scope.state.addYourself = false;
-		$scope.manageSurvey = false;
+		$scope.state.manageSurvey = false;
 		loginService.getAdminAddPrivleges($scope.userID, $scope.token).then(function(data){
 			$scope.adminDDSelect = data;
 			$scope.adminDDSelected = {name:'Select Authorization'};
